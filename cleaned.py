@@ -11,613 +11,613 @@ import os
 import numpy as np
 import math
 
-class AplikasiNutrisi:
+class NutritionApp:
     def __init__(self, window):
-        # ------ PENGATURAN DASAR APLIKASI ------
+        # ------ BASIC APPLICATION SETTINGS ------
         self.window = window
-        self.window.title("Aplikasi Nutrisi")
+        self.window.title("Nutrition App")
         self.window.geometry("1000x750")
         
-        # Mengatur tema warna aplikasi
+        # Set application color theme
         self.style = ttk.Style()
         
-        # Menyiapkan data asupan kalori
-        self.data_kalori = {}
+        # Prepare calorie intake data
+        self.calorie_data = {}
         
-        # Membaca data dari file kalori jika ada
-        self.nama_file = "calorie_data.json"
-        self.baca_data_kalori()
+        # Read calorie data from file if exists
+        self.filename = "calorie_data.json"
+        self.read_calorie_data()
         
-        # ------ BAGIAN HEADER APLIKASI ------
-        self.bingkai_judul = ttk.Frame(self.window, padding=10)
-        self.bingkai_judul.pack(fill=X, pady=(10, 5))
+        # ------ APPLICATION HEADER SECTION ------
+        self.title_frame = ttk.Frame(self.window, padding=10)
+        self.title_frame.pack(fill=X, pady=(10, 5))
         
-        self.judul_aplikasi = ttk.Label(
-            self.bingkai_judul, 
-            text="APLIKASI NUTRISI",
+        self.app_title = ttk.Label(
+            self.title_frame, 
+            text="NUTRITION TRACKER",
             font=('Helvetica', 22, 'bold'),
             bootstyle=PRIMARY
         )
-        self.judul_aplikasi.pack()
+        self.app_title.pack()
         
-        self.sub_judul = ttk.Label(
-            self.bingkai_judul,
-            text="Pantau kebutuhan nutrisi harian Anda",
+        self.subtitle = ttk.Label(
+            self.title_frame,
+            text="Track your daily nutritional needs",
             font=('Helvetica', 12),
             bootstyle=SECONDARY
         )
-        self.sub_judul.pack(pady=5)
+        self.subtitle.pack(pady=5)
         
-        # ------ BUAT TAB UNTUK NAVIGASI ------
-        self.tab_utama = ttk.Notebook(self.window, bootstyle=INFO)
-        self.tab_utama.pack(expand=True, fill=BOTH, padx=15, pady=10)
+        # ------ CREATE NAVIGATION TABS ------
+        self.main_tab = ttk.Notebook(self.window, bootstyle=INFO)
+        self.main_tab.pack(expand=True, fill=BOTH, padx=15, pady=10)
         
-        # Tab 1: Pelacak Makronutrien 
-        self.tab_makro = ttk.Frame(self.tab_utama, padding=10)
-        self.tab_utama.add(self.tab_makro, text="Pelacak Makronutrien")
+        # Tab 1: Macronutrient Tracker
+        self.macro_tab = ttk.Frame(self.main_tab, padding=10)
+        self.main_tab.add(self.macro_tab, text="Macronutrient Tracker")
         
-        # Tab 2: Asupan Kalori Harian
-        self.tab_kalori = ttk.Frame(self.tab_utama, padding=10)
-        self.tab_utama.add(self.tab_kalori, text="Asupan Kalori Harian")
+        # Tab 2: Daily Calorie Intake
+        self.calorie_tab = ttk.Frame(self.main_tab, padding=10)
+        self.main_tab.add(self.calorie_tab, text="Daily Calorie Intake")
         
-        # Siapkan isi kedua tab
-        self.buat_tab_makronutrien()
-        self.buat_tab_kalori()
+        # Prepare content for both tabs
+        self.create_macronutrient_tab()
+        self.create_calorie_tab()
         
-        # ------ BAGIAN FOOTER ------
-        self.bingkai_footer = ttk.Frame(self.window, padding=5)
-        self.bingkai_footer.pack(side=BOTTOM, fill=X)
+        # ------ FOOTER SECTION ------
+        self.footer_frame = ttk.Frame(self.window, padding=5)
+        self.footer_frame.pack(side=BOTTOM, fill=X)
         
-        self.teks_footer = ttk.Label(
-            self.bingkai_footer,
-            text=f"© {datetime.now().year} Aplikasi Nutrisi - v2.1",
+        self.footer_text = ttk.Label(
+            self.footer_frame,
+            text=f"© {datetime.now().year} Nutrition App - v2.1",
             font=('Helvetica', 8),
             bootstyle=SECONDARY
         )
-        self.teks_footer.pack(side=BOTTOM, fill=X, pady=5)
+        self.footer_text.pack(side=BOTTOM, fill=X, pady=5)
 
-    # ------ FUNGSI UNTUK TAB MAKRONUTRIEN ------
-    def buat_tab_makronutrien(self):
-        # Wadah utama tab makronutrien
-        self.bingkai_makro = ttk.Frame(self.tab_makro, padding=10)
-        self.bingkai_makro.pack(expand=True, fill=BOTH)
+    # ------ FUNCTIONS FOR MACRONUTRIENT TAB ------
+    def create_macronutrient_tab(self):
+        # Main container for macronutrient tab
+        self.macro_frame = ttk.Frame(self.macro_tab, padding=10)
+        self.macro_frame.pack(expand=True, fill=BOTH)
         
-        # Mengatur ukuran kolom dan baris
-        self.bingkai_makro.columnconfigure(0, weight=1)
-        self.bingkai_makro.columnconfigure(1, weight=1)
-        self.bingkai_makro.rowconfigure(1, weight=1)
+        # Configure column and row sizes
+        self.macro_frame.columnconfigure(0, weight=1)
+        self.macro_frame.columnconfigure(1, weight=1)
+        self.macro_frame.rowconfigure(1, weight=1)
         
-        # ------ BAGIAN INPUT MAKRONUTRIEN ------
-        self.bingkai_input_makro = ttk.Labelframe(
-            self.bingkai_makro, 
-            text="Input Makronutrien",
+        # ------ MACRONUTRIENT INPUT SECTION ------
+        self.macro_input_frame = ttk.Labelframe(
+            self.macro_frame, 
+            text="Macronutrient Input",
             padding=15,
             bootstyle=INFO
         )
-        self.bingkai_input_makro.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+        self.macro_input_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
         
-        # Input karbohidrat
+        # Carbohydrate input
         ttk.Label(
-            self.bingkai_input_makro, 
-            text="Karbohidrat (g):",
+            self.macro_input_frame, 
+            text="Carbohydrates (g):",
             bootstyle=INFO
         ).grid(row=0, column=0, padx=5, pady=10, sticky='w')
         
-        self.input_karbo = ttk.Entry(self.bingkai_input_makro, width=15)
-        self.input_karbo.grid(row=0, column=1, padx=5, pady=10, sticky='w')
+        self.carb_input = ttk.Entry(self.macro_input_frame, width=15)
+        self.carb_input.grid(row=0, column=1, padx=5, pady=10, sticky='w')
         
-        # Input protein
+        # Protein input
         ttk.Label(
-            self.bingkai_input_makro, 
+            self.macro_input_frame, 
             text="Protein (g):",
             bootstyle=INFO
         ).grid(row=1, column=0, padx=5, pady=10, sticky='w')
         
-        self.input_protein = ttk.Entry(self.bingkai_input_makro, width=15)
-        self.input_protein.grid(row=1, column=1, padx=5, pady=10, sticky='w')
+        self.protein_input = ttk.Entry(self.macro_input_frame, width=15)
+        self.protein_input.grid(row=1, column=1, padx=5, pady=10, sticky='w')
         
-        # Input lemak
+        # Fat input
         ttk.Label(
-            self.bingkai_input_makro, 
-            text="Lemak (g):",
+            self.macro_input_frame, 
+            text="Fat (g):",
             bootstyle=INFO
         ).grid(row=2, column=0, padx=5, pady=10, sticky='w')
         
-        self.input_lemak = ttk.Entry(self.bingkai_input_makro, width=15)
-        self.input_lemak.grid(row=2, column=1, padx=5, pady=10, sticky='w')
+        self.fat_input = ttk.Entry(self.macro_input_frame, width=15)
+        self.fat_input.grid(row=2, column=1, padx=5, pady=10, sticky='w')
         
-        # Tombol hitung
-        self.tombol_hitung_makro = ttk.Button(
-            self.bingkai_input_makro, 
-            text="Hitung Makronutrien", 
-            command=self.hitung_makro,
+        # Calculate button
+        self.calculate_macro_btn = ttk.Button(
+            self.macro_input_frame, 
+            text="Calculate Macronutrients", 
+            command=self.calculate_macros,
             bootstyle=SUCCESS
         )
-        self.tombol_hitung_makro.grid(row=3, column=0, columnspan=2, padx=5, pady=15, sticky='ew')
+        self.calculate_macro_btn.grid(row=3, column=0, columnspan=2, padx=5, pady=15, sticky='ew')
         
-        # ------ BAGIAN DIAGRAM MAKRONUTRIEN ------
-        self.bingkai_diagram_makro = ttk.Labelframe(
-            self.bingkai_makro, 
-            text="Visualisasi Makronutrien",
+        # ------ MACRONUTRIENT DIAGRAM SECTION ------
+        self.macro_diagram_frame = ttk.Labelframe(
+            self.macro_frame, 
+            text="Macronutrient Visualization",
             padding=15,
             bootstyle=PRIMARY
         )
-        self.bingkai_diagram_makro.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
+        self.macro_diagram_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
         
-        # Persiapan diagram pie chart
-        self.gambar_makro = Figure(figsize=(5, 4), dpi=100)
-        self.plot_makro = self.gambar_makro.add_subplot(111)
-        self.canvas_makro = FigureCanvasTkAgg(self.gambar_makro, self.bingkai_diagram_makro)
-        self.canvas_makro.get_tk_widget().pack(fill=BOTH, expand=True)
+        # Prepare pie chart
+        self.macro_figure = Figure(figsize=(5, 4), dpi=100)
+        self.macro_plot = self.macro_figure.add_subplot(111)
+        self.macro_canvas = FigureCanvasTkAgg(self.macro_figure, self.macro_diagram_frame)
+        self.macro_canvas.get_tk_widget().pack(fill=BOTH, expand=True)
         
-        # Diagram pie chart awal (kosong)
-        self.plot_makro.pie([1], labels=['Masukkan data'], colors=['#f5f5f5'])
-        self.plot_makro.set_title('Distribusi Makronutrien')
-        self.canvas_makro.draw()
+        # Initial empty pie chart
+        self.macro_plot.pie([1], labels=['Enter data'], colors=['#f5f5f5'])
+        self.macro_plot.set_title('Macronutrient Distribution')
+        self.macro_canvas.draw()
         
-        # ------ BAGIAN HASIL ANALISIS MAKRO ------
-        self.bingkai_hasil_makro = ttk.Labelframe(
-            self.bingkai_makro, 
-            text="Hasil Analisis Makronutrien",
+        # ------ MACRONUTRIENT ANALYSIS RESULTS SECTION ------
+        self.macro_results_frame = ttk.Labelframe(
+            self.macro_frame, 
+            text="Macronutrient Analysis Results",
             padding=15,
             bootstyle=SUCCESS
         )
-        self.bingkai_hasil_makro.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
+        self.macro_results_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
         
-        # Label hasil analisis
-        self.label_hasil_makro = ttk.Label(
-            self.bingkai_hasil_makro, 
-            text="Masukkan data makronutrien untuk melihat analisis", 
+        # Analysis results label
+        self.macro_results_label = ttk.Label(
+            self.macro_results_frame, 
+            text="Enter macronutrient data to see analysis", 
             font=('Helvetica', 12),
             bootstyle=INFO
         )
-        self.label_hasil_makro.pack(fill=X, pady=5)
+        self.macro_results_label.pack(fill=X, pady=5)
         
-        self.label_detail_makro = ttk.Label(
-            self.bingkai_hasil_makro, 
+        self.macro_details_label = ttk.Label(
+            self.macro_results_frame, 
             text="", 
             font=('Helvetica', 12),
             bootstyle=INFO
         )
-        self.label_detail_makro.pack(fill=X, pady=5)
+        self.macro_details_label.pack(fill=X, pady=5)
 
-    # ------ FUNGSI UNTUK TAB KALORI ------
-    def buat_tab_kalori(self):
-        # Wadah utama tab kalori
-        self.bingkai_kalori = ttk.Frame(self.tab_kalori, padding=10)
-        self.bingkai_kalori.pack(expand=True, fill=BOTH)
+    # ------ FUNCTIONS FOR CALORIE TAB ------
+    def create_calorie_tab(self):
+        # Main container for calorie tab
+        self.calorie_frame = ttk.Frame(self.calorie_tab, padding=10)
+        self.calorie_frame.pack(expand=True, fill=BOTH)
         
-        # Mengatur ukuran kolom dan baris
-        self.bingkai_kalori.columnconfigure(0, weight=1)
-        self.bingkai_kalori.columnconfigure(1, weight=1)
-        self.bingkai_kalori.rowconfigure(1, weight=1)
+        # Configure column and row sizes
+        self.calorie_frame.columnconfigure(0, weight=1)
+        self.calorie_frame.columnconfigure(1, weight=1)
+        self.calorie_frame.rowconfigure(1, weight=1)
         
-        # ------ BAGIAN INPUT KALORI ------
-        self.bingkai_input_kalori = ttk.Labelframe(
-            self.bingkai_kalori, 
-            text="Input Asupan Kalori",
+        # ------ CALORIE INPUT SECTION ------
+        self.calorie_input_frame = ttk.Labelframe(
+            self.calorie_frame, 
+            text="Calorie Intake Input",
             padding=15,
             bootstyle=INFO
         )
-        self.bingkai_input_kalori.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+        self.calorie_input_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
         
-        # Input usia
+        # Age input
         ttk.Label(
-            self.bingkai_input_kalori, 
-            text="Usia:",
+            self.calorie_input_frame, 
+            text="Age:",
             bootstyle=INFO
         ).grid(row=0, column=0, padx=5, pady=10, sticky='w')
         
-        self.input_usia = ttk.Entry(self.bingkai_input_kalori, width=15)
-        self.input_usia.grid(row=0, column=1, padx=5, pady=10, sticky='w')
+        self.age_input = ttk.Entry(self.calorie_input_frame, width=15)
+        self.age_input.grid(row=0, column=1, padx=5, pady=10, sticky='w')
 
-        # Input jenis kelamin
+        # Gender input
         ttk.Label(
-            self.bingkai_input_kalori, 
-            text="Jenis Kelamin:",
+            self.calorie_input_frame, 
+            text="Gender:",
             bootstyle=INFO
         ).grid(row=1, column=0, padx=5, pady=10, sticky='w')
         
-        self.pilihan_kelamin = tk.StringVar(value='')
-        self.combo_kelamin = ttk.Combobox(
-            self.bingkai_input_kalori, 
-            textvariable=self.pilihan_kelamin, 
+        self.gender_var = tk.StringVar(value='')
+        self.gender_combo = ttk.Combobox(
+            self.calorie_input_frame, 
+            textvariable=self.gender_var, 
             width=15, 
-            values=('Laki-laki', 'Wanita'),
+            values=('Male', 'Female'),
             state="readonly"
         )
-        self.combo_kelamin.grid(row=1, column=1, padx=5, pady=10, sticky='w')
+        self.gender_combo.grid(row=1, column=1, padx=5, pady=10, sticky='w')
         
-        # Input tingkat aktivitas
+        # Activity level input
         ttk.Label(
-            self.bingkai_input_kalori, 
-            text="Tingkat Aktivitas:",
+            self.calorie_input_frame, 
+            text="Activity Level:",
             bootstyle=INFO
         ).grid(row=2, column=0, padx=5, pady=10, sticky='w')
         
-        self.pilihan_aktivitas = tk.StringVar(value='')
-        self.combo_aktivitas = ttk.Combobox(
-            self.bingkai_input_kalori, 
-            textvariable=self.pilihan_aktivitas, 
+        self.activity_var = tk.StringVar(value='')
+        self.activity_combo = ttk.Combobox(
+            self.calorie_input_frame, 
+            textvariable=self.activity_var, 
             width=15,
-            values=('Sedentary', 'Ringan', 'Sedang', 'Aktif'),
+            values=('Sedentary', 'Light', 'Moderate', 'Active'),
             state="readonly"
         )
-        self.combo_aktivitas.grid(row=2, column=1, padx=5, pady=10, sticky='w')
+        self.activity_combo.grid(row=2, column=1, padx=5, pady=10, sticky='w')
         
-        # Input kalori hari ini
+        # Today's calorie input
         ttk.Label(
-            self.bingkai_input_kalori, 
-            text="Kalori Hari Ini:",
+            self.calorie_input_frame, 
+            text="Today's Calories:",
             bootstyle=INFO
         ).grid(row=3, column=0, padx=5, pady=10, sticky='w')
         
-        self.input_kalori_hari_ini = ttk.Entry(self.bingkai_input_kalori, width=15)
-        self.input_kalori_hari_ini.grid(row=3, column=1, padx=5, pady=10, sticky='w')
+        self.today_calorie_input = ttk.Entry(self.calorie_input_frame, width=15)
+        self.today_calorie_input.grid(row=3, column=1, padx=5, pady=10, sticky='w')
         
-        # Tombol hitung kalori
-        self.tombol_periksa_kalori = ttk.Button(
-            self.bingkai_input_kalori, 
-            text="Periksa Asupan Kalori", 
-            command=self.periksa_kalori,
+        # Check calorie button
+        self.check_calorie_btn = ttk.Button(
+            self.calorie_input_frame, 
+            text="Check Calorie Intake", 
+            command=self.check_calories,
             bootstyle=SUCCESS
         )
-        self.tombol_periksa_kalori.grid(row=4, column=0, columnspan=2, padx=5, pady=15, sticky='ew')
+        self.check_calorie_btn.grid(row=4, column=0, columnspan=2, padx=5, pady=15, sticky='ew')
         
-        # ------ BAGIAN DIAGRAM KALORI ------
-        self.bingkai_diagram_kalori = ttk.Labelframe(
-            self.bingkai_kalori, 
-            text="Visualisasi Asupan Kalori Mingguan",
+        # ------ CALORIE DIAGRAM SECTION ------
+        self.calorie_diagram_frame = ttk.Labelframe(
+            self.calorie_frame, 
+            text="Weekly Calorie Intake Visualization",
             padding=15,
             bootstyle=PRIMARY
         )
-        self.bingkai_diagram_kalori.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
+        self.calorie_diagram_frame.grid(row=0, column=1, padx=10, pady=10, sticky='nsew')
         
-        # Persiapan diagram batang
-        self.gambar_kalori = Figure(figsize=(5, 4), dpi=100)
-        self.plot_kalori = self.gambar_kalori.add_subplot(111)
-        self.canvas_kalori = FigureCanvasTkAgg(self.gambar_kalori, self.bingkai_diagram_kalori)
-        self.canvas_kalori.get_tk_widget().pack(fill=BOTH, expand=True)
+        # Prepare bar chart
+        self.calorie_figure = Figure(figsize=(5, 4), dpi=100)
+        self.calorie_plot = self.calorie_figure.add_subplot(111)
+        self.calorie_canvas = FigureCanvasTkAgg(self.calorie_figure, self.calorie_diagram_frame)
+        self.calorie_canvas.get_tk_widget().pack(fill=BOTH, expand=True)
         
-        # ------ BAGIAN HASIL ANALISIS KALORI ------
-        self.bingkai_hasil_kalori = ttk.Labelframe(
-            self.bingkai_kalori, 
-            text="Hasil Analisis Kalori",
+        # ------ CALORIE ANALYSIS RESULTS SECTION ------
+        self.calorie_results_frame = ttk.Labelframe(
+            self.calorie_frame, 
+            text="Calorie Analysis Results",
             padding=15,
             bootstyle=SUCCESS
         )
-        self.bingkai_hasil_kalori.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
+        self.calorie_results_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
         
-        # Label hasil analisis kalori
-        self.label_hasil_kalori = ttk.Label(
-            self.bingkai_hasil_kalori, 
-            text="Masukkan data untuk melihat analisis kalori", 
+        # Calorie analysis results label
+        self.calorie_results_label = ttk.Label(
+            self.calorie_results_frame, 
+            text="Enter data to see calorie analysis", 
             font=('Helvetica', 12),
             bootstyle=INFO
         )
-        self.label_hasil_kalori.pack(fill=X, pady=5)
+        self.calorie_results_label.pack(fill=X, pady=5)
         
-        self.label_detail_kalori = ttk.Label(
-            self.bingkai_hasil_kalori, 
+        self.calorie_details_label = ttk.Label(
+            self.calorie_results_frame, 
             text="", 
             font=('Helvetica', 12),
             bootstyle=INFO
         )
-        self.label_detail_kalori.pack(fill=X, pady=5)
+        self.calorie_details_label.pack(fill=X, pady=5)
         
-        # Tampilkan diagram batang awal
-        self.perbarui_diagram_batang()
+        # Display initial bar chart
+        self.update_bar_chart()
         
-    # ------ FUNGSI UNTUK MENGHITUNG MAKRONUTRIEN ------
-    def hitung_makro(self):
-        """Menghitung dan menampilkan distribusi makronutrien"""
+    # ------ FUNCTIONS TO CALCULATE MACRONUTRIENTS ------
+    def calculate_macros(self):
+        """Calculate and display macronutrient distribution"""
         try:
-            # Ambil nilai yang dimasukkan user
-            karbo = float(self.input_karbo.get())
-            protein = float(self.input_protein.get())
-            lemak = float(self.input_lemak.get())
+            # Get user input values
+            carbs = float(self.carb_input.get())
+            protein = float(self.protein_input.get())
+            fat = float(self.fat_input.get())
             
-            # Konversi ke kalori
-            # 1 gram karbohidrat = 4 kalori
-            # 1 gram protein = 4 kalori
-            # 1 gram lemak = 9 kalori
-            kalori_karbo = karbo * 4  
-            kalori_protein = protein * 4
-            kalori_lemak = lemak * 9
+            # Convert to calories
+            # 1g carbohydrate = 4 calories
+            # 1g protein = 4 calories
+            # 1g fat = 9 calories
+            carb_calories = carbs * 4  
+            protein_calories = protein * 4
+            fat_calories = fat * 9
             
-            total_kalori = kalori_karbo + kalori_protein + kalori_lemak
+            total_calories = carb_calories + protein_calories + fat_calories
             
-            # Hitung persentase
-            if total_kalori > 0:
-                persen_karbo = (kalori_karbo / total_kalori) * 100
-                persen_protein = (kalori_protein / total_kalori) * 100
-                persen_lemak = (kalori_lemak / total_kalori) * 100
+            # Calculate percentages
+            if total_calories > 0:
+                carb_percent = (carb_calories / total_calories) * 100
+                protein_percent = (protein_calories / total_calories) * 100
+                fat_percent = (fat_calories / total_calories) * 100
             else:
-                persen_karbo = persen_protein = persen_lemak = 0
+                carb_percent = protein_percent = fat_percent = 0
             
-            # Perbarui diagram pie chart
-            self.plot_makro.clear()
-            nilai = [persen_karbo, persen_protein, persen_lemak]
-            label = [f'Karbohidrat\n({persen_karbo:.1f}%)', 
-                     f'Protein\n({persen_protein:.1f}%)', 
-                     f'Lemak\n({persen_lemak:.1f}%)']
-            warna = ['#3498db', '#2ecc71', '#e74c3c']  # Biru, Hijau, Merah
-            jarak = (0.05, 0.05, 0.05)
+            # Update pie chart
+            self.macro_plot.clear()
+            values = [carb_percent, protein_percent, fat_percent]
+            labels = [f'Carbs\n({carb_percent:.1f}%)', 
+                     f'Protein\n({protein_percent:.1f}%)', 
+                     f'Fat\n({fat_percent:.1f}%)']
+            colors = ['#3498db', '#2ecc71', '#e74c3c']  # Blue, Green, Red
+            explode = (0.05, 0.05, 0.05)
             
-            self.plot_makro.pie(nilai, labels=label, autopct='%1.1f%%', 
-                             startangle=90, explode=jarak, colors=warna, shadow=True)
-            self.plot_makro.set_title('Distribusi Makronutrien')
-            self.gambar_makro.tight_layout()
-            self.canvas_makro.draw()
+            self.macro_plot.pie(values, labels=labels, autopct='%1.1f%%', 
+                             startangle=90, explode=explode, colors=colors, shadow=True)
+            self.macro_plot.set_title('Macronutrient Distribution')
+            self.macro_figure.tight_layout()
+            self.macro_canvas.draw()
             
-            # Periksa keseimbangan dengan nilai yang direkomendasikan
-            # Rekomendasi: 50% karbo, 20% protein, 30% lemak
-            selisih_karbo = abs(persen_karbo - 50)
-            selisih_protein = abs(persen_protein - 20)
-            selisih_lemak = abs(persen_lemak - 30)
+            # Check balance against recommended values
+            # Recommendation: 50% carbs, 20% protein, 30% fat
+            carb_diff = abs(carb_percent - 50)
+            protein_diff = abs(protein_percent - 20)
+            fat_diff = abs(fat_percent - 30)
             
-            selisih_rata = (selisih_karbo + selisih_protein + selisih_lemak) / 3
+            avg_diff = (carb_diff + protein_diff + fat_diff) / 3
             
-            # Tentukan status berdasarkan selisih rata-rata
-            if selisih_rata <= 5:
-                status = "sangat dekat dengan"
-                self.label_hasil_makro.configure(bootstyle=SUCCESS)
-            elif selisih_rata <= 10:
-                status = "mendekati"
-                self.label_hasil_makro.configure(bootstyle=INFO)
-            elif selisih_rata <= 15:
-                status = "sedikit berbeda dari"
-                self.label_hasil_makro.configure(bootstyle=WARNING)
+            # Determine status based on average difference
+            if avg_diff <= 5:
+                status = "very close to"
+                self.macro_results_label.configure(bootstyle=SUCCESS)
+            elif avg_diff <= 10:
+                status = "close to"
+                self.macro_results_label.configure(bootstyle=INFO)
+            elif avg_diff <= 15:
+                status = "somewhat different from"
+                self.macro_results_label.configure(bootstyle=WARNING)
             else:
-                status = "jauh berbeda dari"
-                self.label_hasil_makro.configure(bootstyle=DANGER)
+                status = "very different from"
+                self.macro_results_label.configure(bootstyle=DANGER)
             
-            # Format pesan hasil
-            pesan = f"Keseimbangan makronutrien Anda {status} asupan yang direkomendasikan."
-            rincian = f"Rincian Anda: {persen_karbo:.0f}% Karbohidrat, {persen_protein:.0f}% Protein, {persen_lemak:.0f}% Lemak."
+            # Format result message
+            message = f"Your macronutrient balance is {status} the recommended intake."
+            details = f"Your breakdown: {carb_percent:.0f}% Carbs, {protein_percent:.0f}% Protein, {fat_percent:.0f}% Fat."
             
-            # Perbarui label hasil
-            self.label_hasil_makro.config(text=pesan)
-            self.label_detail_makro.config(text=rincian)
+            # Update result labels
+            self.macro_results_label.config(text=message)
+            self.macro_details_label.config(text=details)
             
         except ValueError:
-            # Jika input bukan angka, tampilkan pesan error
-            messagebox.showerror("Error", "Masukkan nilai numerik yang valid.")
+            # Show error if input is not numeric
+            messagebox.showerror("Error", "Please enter valid numeric values.")
     
-    # ------ FUNGSI UNTUK MEMBACA DATA KALORI DARI FILE ------
-    def baca_data_kalori(self):
-        """Membaca data riwayat kalori dari file"""
-        # Data default untuk 7 hari terakhir
-        hari_ini = datetime.now()
+    # ------ FUNCTIONS TO READ CALORIE DATA FROM FILE ------
+    def read_calorie_data(self):
+        """Read calorie history data from file"""
+        # Default data for last 7 days
+        today = datetime.now()
         for i in range(7):
-            tanggal = (hari_ini - timedelta(days=i)).strftime("%Y-%m-%d")
-            self.data_kalori[tanggal] = 0
+            date = (today - timedelta(days=i)).strftime("%Y-%m-%d")
+            self.calorie_data[date] = 0
         
-        # Nilai default jika file tidak ada
-        self.kalori_rekomendasi = 0
-        self.kalori_minimum = 0
-        self.kalori_maksimum = 0
+        # Default values if file doesn't exist
+        self.recommended_calories = 0
+        self.min_calories = 0
+        self.max_calories = 0
         
-        # Coba baca file jika ada
-        if os.path.exists(self.nama_file):
+        # Try to read file if exists
+        if os.path.exists(self.filename):
             try:
-                with open(self.nama_file, 'r') as file:
+                with open(self.filename, 'r') as file:
                     data = json.load(file)
                     
-                    # Pastikan data untuk 7 hari terakhir ada
+                    # Ensure data exists for last 7 days
                     for i in range(7):
-                        tanggal = (hari_ini - timedelta(days=i)).strftime("%Y-%m-%d")
-                        if tanggal not in data:
-                            data[tanggal] = 0
+                        date = (today - timedelta(days=i)).strftime("%Y-%m-%d")
+                        if date not in data:
+                            data[date] = 0
                     
-                    # Hanya simpan data 7 hari terakhir
-                    tanggal_untuk_disimpan = [(hari_ini - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
-                    self.data_kalori = {k: data[k] for k in tanggal_untuk_disimpan if k in data}
+                    # Only keep last 7 days data
+                    dates_to_keep = [(today - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
+                    self.calorie_data = {k: data[k] for k in dates_to_keep if k in data}
                     
-                    # Baca profil pengguna jika ada
+                    # Read user profile if exists
                     if 'user_profile' in data:
-                        self.profil_pengguna = data['user_profile']
+                        self.user_profile = data['user_profile']
                     else:
-                        self.profil_pengguna = {}
+                        self.user_profile = {}
                         
-                    # Baca kalori rekomendasi jika ada
+                    # Read recommended calories if exists
                     if 'recommended_calories' in data:
-                        self.kalori_rekomendasi = data['recommended_calories']
-                        self.kalori_minimum = data['min_calories']
-                        self.kalori_maksimum = data['max_calories']
+                        self.recommended_calories = data['recommended_calories']
+                        self.min_calories = data['min_calories']
+                        self.max_calories = data['max_calories']
             except Exception as e:
-                print(f"Error saat membaca data: {e}")
-                self.profil_pengguna = {}
+                print(f"Error reading data: {e}")
+                self.user_profile = {}
         else:
-            self.profil_pengguna = {}
+            self.user_profile = {}
         
-    # ------ FUNGSI UNTUK MENYIMPAN DATA KALORI KE FILE ------
-    def simpan_data_kalori(self):
-        """Menyimpan data riwayat kalori ke file"""
+    # ------ FUNCTIONS TO SAVE CALORIE DATA TO FILE ------
+    def save_calorie_data(self):
+        """Save calorie history data to file"""
         data = {
-            **self.data_kalori,
-            'user_profile': self.profil_pengguna,
-            'recommended_calories': self.kalori_rekomendasi,
-            'min_calories': self.kalori_minimum,
-            'max_calories': self.kalori_maksimum
+            **self.calorie_data,
+            'user_profile': self.user_profile,
+            'recommended_calories': self.recommended_calories,
+            'min_calories': self.min_calories,
+            'max_calories': self.max_calories
         }
         try:
-            with open(self.nama_file, 'w') as file:
+            with open(self.filename, 'w') as file:
                 json.dump(data, file)
         except Exception as e:
-            print(f"Error saat menyimpan data: {e}")
-            messagebox.showerror("Error", f"Gagal menyimpan data: {e}")
+            print(f"Error saving data: {e}")
+            messagebox.showerror("Error", f"Failed to save data: {e}")
     
-    # ------ FUNGSI UNTUK MEMERIKSA ASUPAN KALORI HARIAN ------
-    def periksa_kalori(self):
-        """Memeriksa asupan kalori harian"""
+    # ------ FUNCTIONS TO CHECK DAILY CALORIE INTAKE ------
+    def check_calories(self):
+        """Check daily calorie intake"""
         try:
-            # Ambil nilai yang dimasukkan user
-            usia = int(self.input_usia.get())
-            jenis_kelamin = self.pilihan_kelamin.get()
-            aktivitas = self.pilihan_aktivitas.get().lower()
-            kalori_hari_ini = float(self.input_kalori_hari_ini.get())
+            # Get user input values
+            age = int(self.age_input.get())
+            gender = self.gender_var.get()
+            activity = self.activity_var.get().lower()
+            today_calories = float(self.today_calorie_input.get())
             
-            # Nilai berat dan tinggi default berdasarkan jenis kelamin
-            if jenis_kelamin.lower() == 'laki-laki':
-                berat = 70  # kg
-                tinggi = 170  # cm
-            else:  # wanita
-                berat = 60  # kg
-                tinggi = 160  # cm
+            # Default weight and height based on gender
+            if gender.lower() == 'male':
+                weight = 70  # kg
+                height = 170  # cm
+            else:  # female
+                weight = 60  # kg
+                height = 160  # cm
             
-            # Simpan ke profil pengguna
-            self.profil_pengguna = {
-                'age': usia,
-                'gender': jenis_kelamin,
-                'activity': aktivitas
+            # Save to user profile
+            self.user_profile = {
+                'age': age,
+                'gender': gender,
+                'activity': activity
             }
             
-            # Hitung BMR menggunakan rumus Mifflin-St Jeor
-            if jenis_kelamin.lower() == 'laki-laki':
-                bmr = 10 * berat + 6.25 * tinggi - 5 * usia + 5
-            else:  # wanita
-                bmr = 10 * berat + 6.25 * tinggi - 5 * usia - 161
+            # Calculate BMR using Mifflin-St Jeor equation
+            if gender.lower() == 'male':
+                bmr = 10 * weight + 6.25 * height - 5 * age + 5
+            else:  # female
+                bmr = 10 * weight + 6.25 * height - 5 * age - 161
             
-            # Faktor pengali berdasarkan tingkat aktivitas
-            faktor_aktivitas = {
-                'sedentary': 1.2,  # Sangat jarang olahraga
-                'ringan': 1.375,   # Olahraga ringan 1-3 hari/minggu
-                'sedang': 1.55,    # Olahraga sedang 3-5 hari/minggu
-                'aktif': 1.725,    # Olahraga berat 6-7 hari/minggu
+            # Activity multipliers
+            activity_factors = {
+                'sedentary': 1.2,  # Little to no exercise
+                'light': 1.375,    # Light exercise 1-3 days/week
+                'moderate': 1.55,  # Moderate exercise 3-5 days/week
+                'active': 1.725,    # Hard exercise 6-7 days/week
             }
             
-            # Hitung kalori harian yang direkomendasikan
-            kalori_rekomendasi = bmr * faktor_aktivitas.get(aktivitas, 1.2)
+            # Calculate recommended daily calories
+            recommended_calories = bmr * activity_factors.get(activity, 1.2)
             
-            # Perbarui nilai kalori rekomendasi
-            self.kalori_rekomendasi = kalori_rekomendasi
+            # Update recommended calories value
+            self.recommended_calories = recommended_calories
             
-            # Set rentang (±10% dari rekomendasi)
-            self.kalori_minimum = math.ceil(kalori_rekomendasi * 0.97 / 100) * 100
-            self.kalori_maksimum = math.ceil(kalori_rekomendasi * 1.05 / 100) * 100
+            # Set range (±10% of recommendation)
+            self.min_calories = math.ceil(recommended_calories * 0.97 / 100) * 100
+            self.max_calories = math.ceil(recommended_calories * 1.05 / 100) * 100
             
-            # Simpan kalori hari ini
-            hari_ini = datetime.now().strftime("%Y-%m-%d")
-            self.data_kalori[hari_ini] = kalori_hari_ini
+            # Save today's calories
+            today = datetime.now().strftime("%Y-%m-%d")
+            self.calorie_data[today] = today_calories
             
-            # Simpan data ke file
-            self.simpan_data_kalori()
+            # Save data to file
+            self.save_calorie_data()
             
-            # Perbarui diagram batang
-            self.perbarui_diagram_batang()
+            # Update bar chart
+            self.update_bar_chart()
             
-            # Tentukan pesan status berdasarkan asupan kalori
-            if kalori_hari_ini < self.kalori_minimum:
-                if self.kalori_minimum - kalori_hari_ini <= 200:
-                    status = f"sedikit rendah (kurang dari rentang yang direkomendasikan {self.kalori_minimum:.0f}-{self.kalori_maksimum:.0f} kkal)"
-                    self.label_hasil_kalori.configure(bootstyle=WARNING)
+            # Determine status message based on calorie intake
+            if today_calories < self.min_calories:
+                if self.min_calories - today_calories <= 200:
+                    status = f"slightly below (under the recommended range of {self.min_calories:.0f}-{self.max_calories:.0f} kcal)"
+                    self.calorie_results_label.configure(bootstyle=WARNING)
                 else:
-                    status = f"rendah (kurang dari rentang yang direkomendasikan {self.kalori_minimum:.0f}-{self.kalori_maksimum:.0f} kkal)"
-                    self.label_hasil_kalori.configure(bootstyle=DANGER)
-            elif kalori_hari_ini > self.kalori_maksimum:
-                if kalori_hari_ini - self.kalori_maksimum <= 200:
-                    status = f"sedikit di atas rentang yang direkomendasikan ({self.kalori_minimum:.0f}-{self.kalori_maksimum:.0f} kkal untuk profil Anda)"
-                    self.label_hasil_kalori.configure(bootstyle=WARNING)
+                    status = f"low (under the recommended range of {self.min_calories:.0f}-{self.max_calories:.0f} kcal)"
+                    self.calorie_results_label.configure(bootstyle=DANGER)
+            elif today_calories > self.max_calories:
+                if today_calories - self.max_calories <= 200:
+                    status = f"slightly above the recommended range ({self.min_calories:.0f}-{self.max_calories:.0f} kcal for your profile)"
+                    self.calorie_results_label.configure(bootstyle=WARNING)
                 else:
-                    status = f"di atas rentang yang direkomendasikan ({self.kalori_minimum:.0f}-{self.kalori_maksimum:.0f} kkal untuk profil Anda)"
-                    self.label_hasil_kalori.configure(bootstyle=DANGER)
+                    status = f"above the recommended range ({self.min_calories:.0f}-{self.max_calories:.0f} kcal for your profile)"
+                    self.calorie_results_label.configure(bootstyle=DANGER)
             else:
-                status = f"dalam rentang yang direkomendasikan ({self.kalori_minimum:.0f}-{self.kalori_maksimum:.0f} kkal untuk profil Anda)"
-                self.label_hasil_kalori.configure(bootstyle=SUCCESS)
+                status = f"within the recommended range ({self.min_calories:.0f}-{self.max_calories:.0f} kcal for your profile)"
+                self.calorie_results_label.configure(bootstyle=SUCCESS)
             
-            # Perbarui label hasil
-            pesan = f"Asupan kalori Anda {status}."
-            self.label_hasil_kalori.config(text=pesan)
+            # Update result label
+            message = f"Your calorie intake is {status}."
+            self.calorie_results_label.config(text=message)
             
         except ValueError:
-            # Jika input bukan angka, tampilkan pesan error
-            messagebox.showerror("Error", "Masukkan nilai numerik yang valid.")
+            # Show error if input is not numeric
+            messagebox.showerror("Error", "Please enter valid numeric values.")
     
-    # ------ FUNGSI UNTUK MEMPERBARUI DIAGRAM BATANG ------
-    def perbarui_diagram_batang(self):
-        """Memperbarui diagram batang dengan data kalori terbaru"""
-        self.plot_kalori.clear()
+    # ------ FUNCTIONS TO UPDATE BAR CHART ------
+    def update_bar_chart(self):
+        """Update bar chart with latest calorie data"""
+        self.calorie_plot.clear()
         
-        # Dapatkan 7 hari terakhir sebagai nama hari dengan tanggal
-        hari_ini = datetime.now()
-        tanggal = [(hari_ini - timedelta(days=i)) for i in range(6, -1, -1)]
-        label_x = [d.strftime("%d/%m") for d in tanggal]
-        kunci_tanggal = [d.strftime("%Y-%m-%d") for d in tanggal]
+        # Get last 7 days as day names with dates
+        today = datetime.now()
+        dates = [(today - timedelta(days=i)) for i in range(6, -1, -1)]
+        x_labels = [d.strftime("%m/%d") for d in dates]
+        date_keys = [d.strftime("%Y-%m-%d") for d in dates]
         
-        # Dapatkan nilai kalori
-        kalori = [self.data_kalori.get(tanggal, 0) for tanggal in kunci_tanggal]
+        # Get calorie values
+        calories = [self.calorie_data.get(date, 0) for date in date_keys]
         
-        # Buat diagram batang
-        x = np.arange(len(label_x))
-        batang = self.plot_kalori.bar(x, kalori, width=0.6)
+        # Create bar chart
+        x = np.arange(len(x_labels))
+        bars = self.calorie_plot.bar(x, calories, width=0.6)
         
-        # Warnai batang berdasarkan rentang kalori
-        for i, batang in enumerate(batang):
-            kal = kalori[i]
-            if kal == 0:
-                batang.set_color('#cccccc')  # Abu-abu untuk data kosong
-            elif kal < self.kalori_minimum and self.kalori_minimum > 0:
-                batang.set_color('#ff9f1a')  # Oranye untuk kalori rendah
-            elif kal > self.kalori_maksimum and self.kalori_maksimum > 0:
-                batang.set_color('#e74c3c')  # Merah untuk kalori tinggi
+        # Color bars based on calorie range
+        for i, bar in enumerate(bars):
+            cal = calories[i]
+            if cal == 0:
+                bar.set_color('#cccccc')  # Gray for empty data
+            elif cal < self.min_calories and self.min_calories > 0:
+                bar.set_color('#ff9f1a')  # Orange for low calories
+            elif cal > self.max_calories and self.max_calories > 0:
+                bar.set_color('#e74c3c')  # Red for high calories
             else:
-                batang.set_color('#2ecc71')  # Hijau untuk kalori baik
+                bar.set_color('#2ecc71')  # Green for good calories
                 
-            # Tambahkan label nilai di atas batang
-            tinggi = batang.get_height()
-            if tinggi > 0:
-                self.plot_kalori.text(batang.get_x() + batang.get_width()/2., tinggi + 50,
-                                    f"{tinggi:.0f}", ha='center', va='bottom')
+            # Add value labels on top of bars
+            height = bar.get_height()
+            if height > 0:
+                self.calorie_plot.text(bar.get_x() + bar.get_width()/2., height + 50,
+                                    f"{height:.0f}", ha='center', va='bottom')
         
-        # Atur batas sumbu y
-        kalori_tertinggi = max(max(kalori) if kalori else 0, self.kalori_maksimum * 1.2) 
-        if kalori_tertinggi <= 0:
-            kalori_tertinggi = 3000  # Nilai default jika tidak ada data
-        self.plot_kalori.set_ylim(0, kalori_tertinggi * 1.2)
+        # Set y-axis limits
+        highest_calories = max(max(calories) if calories else 0, self.max_calories * 1.2) 
+        if highest_calories <= 0:
+            highest_calories = 3000  # Default value if no data
+        self.calorie_plot.set_ylim(0, highest_calories * 1.2)
         
-        # Tambahkan garis rentang rekomendasi
-        if self.kalori_rekomendasi > 0:
-            self.plot_kalori.axhline(y=self.kalori_rekomendasi, color='green', linestyle='-', linewidth=2, label=f'Rekomendasi: {self.kalori_rekomendasi:.0f} kkal')
-            self.plot_kalori.axhline(y=self.kalori_minimum, color='orange', linestyle='--', linewidth=1, label=f'Min: {self.kalori_minimum:.0f} kkal')  
-            self.plot_kalori.axhline(y=self.kalori_maksimum, color='red', linestyle='--', linewidth=1, label=f'Max: {self.kalori_maksimum:.0f} kkal')
+        # Add recommended range lines
+        if self.recommended_calories > 0:
+            self.calorie_plot.axhline(y=self.recommended_calories, color='green', linestyle='-', linewidth=2, label=f'Recommended: {self.recommended_calories:.0f} kcal')
+            self.calorie_plot.axhline(y=self.min_calories, color='orange', linestyle='--', linewidth=1, label=f'Min: {self.min_calories:.0f} kcal')  
+            self.calorie_plot.axhline(y=self.max_calories, color='red', linestyle='--', linewidth=1, label=f'Max: {self.max_calories:.0f} kcal')
             
-            # Tambahkan area berwarna untuk rentang yang direkomendasikan
-            self.plot_kalori.axhspan(self.kalori_minimum, self.kalori_maksimum, alpha=0.1, color='green')
+            # Add colored area for recommended range
+            self.calorie_plot.axhspan(self.min_calories, self.max_calories, alpha=0.1, color='green')
         
-        # Atur label sumbu x
-        self.plot_kalori.set_xticks(x)
-        self.plot_kalori.set_xticklabels(label_x, rotation=45)
+        # Set x-axis labels
+        self.calorie_plot.set_xticks(x)
+        self.calorie_plot.set_xticklabels(x_labels, rotation=45)
         
-        # Tambahkan label dan judul
-        self.plot_kalori.set_xlabel("Tanggal")
-        self.plot_kalori.set_ylabel("Kalori")
-        self.plot_kalori.set_title('Asupan Kalori 7 Hari Terakhir')
+        # Add labels and title
+        self.calorie_plot.set_xlabel("Date")
+        self.calorie_plot.set_ylabel("Calories")
+        self.calorie_plot.set_title('Last 7 Days Calorie Intake')
         
-        # Tambahkan legenda jika ada rekomendasi kalori
-        if self.kalori_rekomendasi > 0:
-            self.plot_kalori.legend(loc='upper right', fontsize='small')
+        # Add legend if there are recommended calories
+        if self.recommended_calories > 0:
+            self.calorie_plot.legend(loc='lower left', fontsize='small')
         
-        # Perbarui tampilan
-        self.gambar_kalori.tight_layout()
-        self.canvas_kalori.draw()
+        # Update display
+        self.calorie_figure.tight_layout()
+        self.calorie_canvas.draw()
     
-    # ------ FUNGSI SAAT MENUTUP APLIKASI ------
-    def saat_ditutup(self):
-        # Simpan data sebelum menutup aplikasi
-        self.simpan_data_kalori()
+    # ------ FUNCTION WHEN CLOSING APPLICATION ------
+    def on_close(self):
+        # Save data before closing application
+        self.save_calorie_data()
         self.window.destroy()
 
-# ------ PROGRAM UTAMA ------
+# ------ MAIN PROGRAM ------
 if __name__ == "__main__":
-    # Buat window aplikasi dengan tema 'vapor'
-    window = ttk.Window(themename="vapor")
+    # Create application window with 'litera' theme
+    window = ttk.Window(themename="litera")
     
-    # Jalankan aplikasi
-    app = AplikasiNutrisi(window)
+    # Run application
+    app = NutritionApp(window)
     
-    # Atur fungsi yang akan dijalankan saat menutup aplikasi
-    window.protocol("WM_DELETE_WINDOW", app.saat_ditutup)
+    # Set function to run when closing application
+    window.protocol("WM_DELETE_WINDOW", app.on_close)
     
-    # Jalankan loop utama aplikasi
+    # Run main application loop
     window.mainloop()
